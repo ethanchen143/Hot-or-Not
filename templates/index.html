@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot or Not</title>
+    <style>
+        /* Styling the button */
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Hide the file input */
+        .file-input {
+            display: none;
+        }
+    </style>
+    
+</head>
+<body>
+    <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+        <!-- Hidden file input field -->
+        <input type="file" name="audio_file" accept="audio/*" class="file-input" id="fileInput" required>
+        <!-- Button to trigger file input and upload -->
+        <button type="button" class="upload-btn" onclick="uploadFile()">Upload Audio</button>
+    </form>
+
+    <script>
+        function uploadFile() {
+            // Trigger the hidden file input
+            document.getElementById('fileInput').click();
+            // When a file is selected, submit the form
+            document.getElementById('fileInput').addEventListener('change', function() {
+                // Submit the form
+                document.getElementById('uploadForm').submit();
+            });
+        }
+    </script>
+</body>
+</html>

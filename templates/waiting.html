@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing...</title>
+</head>
+<body>
+    <h1>Your file is being processed...</h1>
+
+    <script>
+        // Trigger the processing function when the page loads
+        window.onload = function() {
+            fetch('{{ url_for("process_file") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.result === 'hot') {
+                        window.location.href = '{{ url_for("hot") }}';
+                    } else {
+                        window.location.href = '{{ url_for("no") }}';
+                    }
+                } else {
+                    alert("An error occurred: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        };
+    </script>
+</body>
+</html>
