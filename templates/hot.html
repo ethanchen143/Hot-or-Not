@@ -4,8 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hot or Not</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        #proceed-button {
+            position: absolute;
+            top: 89%;
+            left: 16%;
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            animation: fadeIn 4s forwards, blink 2s infinite step-end;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        a{
+            text-decoration: none;
+            font-size: max(1.25vh,1.25vw);
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+    </style>
 </head>
 <body>
-    Hot
+    <img src="{{ url_for('static', filename='images/result_1.png') }}"></img>
+    <video id="loading-video" autoplay muted>
+        <source src="{{ url_for('static', filename='videos/result_1.mp4') }}" />
+    </video>
+    <div id="proceed-button">
+        <a href="https://hot-or-not-app.streamlit.app/">click here to proceed...</a>
+    </div>
+    <script>
+        const video = document.getElementById('loading-video');
+        const proceed = document.getElementById('proceed-button');
+        video.addEventListener('ended',()=>{
+            proceed.style.display = 'block';
+        })
+    </script>
 </body>
 </html>

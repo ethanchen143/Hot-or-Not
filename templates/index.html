@@ -5,47 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hot or Not</title>
     <style>
-        /* Styling the button */
-        .upload-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
+        .upload-overlay {
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            width: 10%; 
+            height: 6%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background-color: transparent; /* Fully transparent */
             cursor: pointer;
+            border: none;
         }
 
-        .upload-btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Hide the file input */
         .file-input {
             display: none;
         }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #loop-video {
+            opacity: 0;
+            z-index: 0;
+        }
+
+        .about-button {
+            position: absolute;
+            top: -1.5%;
+            right: -1%;
+            width: 25%;
+            height: 15%;
+            cursor: pointer;
+            z-index: 2000;
+            background: transparent;
+            border: none;
+        }
+
+        .about-button img {
+            width: 100%;
+            height: 100%;
+        }
+
+        #about-video {
+            opacity: 0;
+            z-index: 1;
+        }
+
+        #about-static {
+            opacity: 0;
+            z-index: 1;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
-    
 </head>
 <body>
+    <video id="loading-video" autoplay muted>
+        <source src="{{ url_for('static', filename='videos/begin.mp4') }}" />
+    </video>
+
+    <video id="loop-video" muted preload="auto">
+        <source src="{{ url_for('static', filename='videos/begin_loop.mp4') }}" />
+    </video>
+
+    <button class="about-button" onclick="toggleAbout()">
+        <img src="{{ url_for('static', filename='images/about-button.png') }}" alt="About">
+    </button>
+
+    <video id="about-video" muted>
+        <source src="{{ url_for('static', filename='videos/about.mp4') }}" />
+    </video>
+
+    <img id="about-static" src="{{ url_for('static', filename='images/about.png') }}" alt="About Page">
+
     <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+        <!-- Transparent overlay to trigger file input -->
+        <button type="button" class="upload-overlay" onclick="uploadFile()"></button>
         <!-- Hidden file input field -->
         <input type="file" name="audio_file" accept="audio/*" class="file-input" id="fileInput" required>
-        <!-- Button to trigger file input and upload -->
-        <button type="button" class="upload-btn" onclick="uploadFile()">Upload Audio</button>
     </form>
 
     <script>
+        const loadingVideo = document.getElementById('loading-video');
+        const loopVideo = document.getElementById('loop-video');
+        loadingVideo.addEventListener('ended', () => {
+            loadingVideo.style.opacity = '0';
+            loopVideo.style.opacity = '1';
+            loopVideo.play();
+
+            // Manual loop handling
+            loopVideo.addEventListener('timeupdate', () => {
+                if (loopVideo.currentTime >= loopVideo.duration - 0.5) {
+                    loopVideo.currentTime = 0;
+                    loopVideo.play();
+                }
+            });
+        });
         function uploadFile() {
             // Trigger the hidden file input
             document.getElementById('fileInput').click();
             // When a file is selected, submit the form
             document.getElementById('fileInput').addEventListener('change', function() {
-                // Submit the form
                 document.getElementById('uploadForm').submit();
             });
+        }
+
+        let isAboutOpen = false;
+
+        function toggleAbout() {
+            const aboutVideo = document.getElementById('about-video');
+            const aboutStatic = document.getElementById('about-static');
+            const loadingVideo = document.getElementById('loading-video');
+            const loopVideo = document.getElementById('loop-video');
+
+            if (!isAboutOpen) {
+                // Opening about section
+                aboutVideo.currentTime = 0;
+                aboutVideo.style.opacity = '1';
+                aboutVideo.play();
+                
+                loadingVideo.style.opacity = '0';
+                loopVideo.style.opacity = '0';
+
+                aboutVideo.addEventListener('ended', () => {
+                    aboutVideo.style.opacity = '0';
+                    aboutStatic.style.opacity = '1';
+                }, { once: true });
+            } else {
+                // Closing about section
+                aboutStatic.style.opacity = '0';
+                aboutVideo.style.opacity = '0';
+                loopVideo.style.opacity = '1';
+                loopVideo.play();
+            }
+            
+            isAboutOpen = !isAboutOpen;
         }
     </script>
 </body>

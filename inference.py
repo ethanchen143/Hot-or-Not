@@ -13,8 +13,8 @@ from data import extract_features
 
 def infer(file_path):
     # Load the trained models
-    cat = joblib.load('cat.pkl')
-    xgb_model = joblib.load('xgb.pkl')
+    cat = joblib.load('./models/cat.pkl')
+    xgb_model = joblib.load('./models/xgb.pkl')
     # rf = joblib.load('rf.pkl')
 
     # Load the dataset to ensure consistent encoding
@@ -36,9 +36,9 @@ def infer(file_path):
         'tonnetz_1', 'tonnetz_2', 'tonnetz_3', 'tonnetz_4', 'tonnetz_5', 'tonnetz_6'
     ]
     
+    # Save Analysis File
     df_new_audio = pd.DataFrame(feature_list, columns=column_names)
-    
-    df_new_audio.to_csv(f'{file_path}_analysis.csv')
+    df_new_audio.to_csv(f"./analysis_files/{file_path.split('/')[-1]}.csv",index=False)
     
     # Drop unnecessary columns from the new audio DataFrame
     df_new_audio = df_new_audio.drop(['name', 'is_hot', 'not_danceable', 'not_aggressive', 'not_happy', 'not_sad',

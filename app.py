@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import send_file
 from werkzeug.utils import secure_filename
-import time 
 from inference import infer
 
 app = Flask(__name__)
@@ -27,9 +27,7 @@ def upload_file():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-        
         session['file_path'] = file_path
-        
         return redirect(url_for('waiting'))
 
 @app.route('/waiting')
@@ -43,9 +41,17 @@ def process_file():
     if not file_path:
         return jsonify({"status": "error", "message": "No file path found"}), 400
 
-    result = process_audio(file_path)
+    result = 'hot' if infer(file_path) else 'not'
+    fp = f"{file_path.split('/')[-1]}.csv"
+    return jsonify({"status": "success", "result": result, "filepath": fp})
 
-    return jsonify({"status": "success", "result": result})
+@app.route('/download/<filename>', methods=['GET'])
+def download_file(filename):
+    file_path = os.path.join('analysis_files', filename)
+    try:
+        return send_file(file_path, as_attachment=True)
+    except Exception as e:
+        return str(e), 404
 
 @app.route('/hot')
 def hot():
@@ -55,10 +61,5 @@ def hot():
 def no():
     return render_template('not.html')
 
-
-def process_audio(file_path):
-    return 'hot' if infer(file_path) else 'not'
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8000)
