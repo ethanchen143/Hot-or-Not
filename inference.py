@@ -10,6 +10,11 @@ from catboost import CatBoostClassifier, Pool
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
 from data import extract_features
+import logging
+
+# Initialize logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 def infer(file_path):
     # Load the trained models
@@ -22,6 +27,10 @@ def infer(file_path):
 
     # Extract features from the new audio file
     features = extract_features(file_path)
+    features = extract_features(file_path)
+    if features is None:
+        logger.error("Feature extraction returned None")
+        return None
     feature_list = [features]  # Wrap features in a list to create a DataFrame
 
     # Create a DataFrame for the new audio's features

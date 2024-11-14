@@ -2,7 +2,7 @@ services:
   - type: web
     name: hot-or-not
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && sudo apt-get update && sudo apt-get install libomp-dev && sudo apt-get install ffmpeg
     startCommand: python app.py
     plan: free
     pythonVersion: 3.9.6

@@ -6,11 +6,16 @@ from werkzeug.utils import secure_filename
 from inference import infer
 from waitress import serve
 
-# Set up basic logging
+# Configure logging - disable numba debug messages
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+# Disable numba debug logging
+logging.getLogger('numba').setLevel(logging.WARNING)
+# Disable unnecessary tensorflow logging
+logging.getLogger('tensorflow').setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
@@ -53,10 +58,15 @@ def process_file():
         return jsonify({"status": "error", "message": "No file path found"}), 400
 
     logger.info(f"Processing file: {file_path}")
-    result = 'hot' if infer(file_path) else 'not'
-    fp = f"{file_path.split('/')[-1]}.csv"
-    logger.info(f"Result for {file_path}: {result}")
-    return jsonify({"status": "success", "result": result, "filepath": fp})
+    result = infer(file_path)
+    
+    if result is None:
+        return jsonify({"status": "error", "message": "Feature extraction failed"}), 500
+    
+    final_result = 'hot' if result else 'not'
+    fp = f"{os.path.basename(file_path)}.csv"
+    logger.info(f"Result for {file_path}: {final_result}")
+    return jsonify({"status": "success", "result": final_result, "filepath": fp})
 
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
@@ -78,6 +88,15 @@ def no():
 if __name__ == '__main__':
     logger.info("Starting server...")
     try:
-        serve(app, host='0.0.0.0', port=8000, threads=1)
+        serve(
+            app,
+            host='0.0.0.0',
+            port=8000,
+            threads=4,
+            channel_timeout=300,
+            cleanup_interval=30,
+            connection_limit=200,
+            max_request_body_size=1073741824
+        )
     except Exception as e:
         logger.error(f"Server failed to start: {e}")
