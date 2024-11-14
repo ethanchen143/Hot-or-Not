@@ -1,0 +1,12 @@
+/* If you have a playlist container class */
+.playlist-container {
+    width: 80%;  /* Reduce from whatever it currently is */
+    height: 50vh;  /* Increase height */
+    margin: 0 auto;  /* Center the container */
+}
+
+/* If you're using iframe for Spotify playlists */
+.spotify-playlist {
+    width: 50vw;  /* Make slimmer - adjust this value */
+    height: 25vh;  /* Make taller - adjust this value */
+} 
