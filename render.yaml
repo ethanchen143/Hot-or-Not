@@ -2,58 +2,29 @@ services:
   - type: web
     name: hot-or-not
     env: python
-    buildCommand: |
-      apt-get update && \
-      apt-get install -y \
-        build-essential \
-        libsndfile1 \
-        ffmpeg \
-        libfftw3-dev \
-        libavcodec-dev \
-        libavformat-dev \
-        libavutil-dev \
-        libswresample-dev \
-        libssl-dev \
-        libasound2-dev \
-        portaudio19-dev \
-        libportaudio2 \
-        libportaudiocpp0 \
-        python3-dev \
-        pkg-config \
-        git \
-        cmake \
-        ninja-build \
-        libgtest-dev \
-        libeigen3-dev \
-        libtag1-dev \
-        libsamplerate0-dev \
-        libyaml-dev \
-        libchromaprint-dev \
-        libsdl2-dev \
-        libsdl2-2.0-0 \
-        libsdl2-mixer-2.0-0 \
-        libsdl2-mixer-dev \
-        libsndfile1-dev \
-        libasound2-dev \
-        libflac-dev \
-        libogg-dev \
-        libvorbis-dev \
-        libopus-dev \
-        libmp3lame-dev \
-        libmpg123-dev \
-        libfaad-dev \
-        libfftw3-dev \
-        libavcodec-extra \
-        libchromaprint-tools && \
-      pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt
     startCommand: python app.py
+    plan: free
+    pythonVersion: 3.9.6
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
-      - key: LD_LIBRARY_PATH
-        value: /usr/local/lib
+        value: 3.9.6
+      - key: PYTHONUNBUFFERED
+        value: "true"
+      - key: NUMBA_CACHE_DIR
+        value: "/tmp/numba_cache"
+      - key: LIBROSA_CACHE_DIR
+        value: "/tmp/librosa_cache"
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
     healthCheckPath: /
+    autoDeploy: false
     buildFilter:
       paths:
         - requirements.txt
         - "**/*.py"
+        - "**/*.pb"
+        - models/**
+        - essentia graphfiles/**
