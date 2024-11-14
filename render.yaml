@@ -2,29 +2,20 @@ services:
   - type: web
     name: hot-or-not
     env: python
-    buildCommand: apt-get update && apt-get install -y libomp-dev ffmpeg && pip install -r requirements.txt
+    buildCommand: |
+      pip install -r requirements.txt && \
+      pip install essentia-tensorflow==2.1b6.dev218 -f https://essentia.upf.edu/python-wheels/
     startCommand: python app.py
-    plan: free
-    pythonVersion: 3.9.6
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.9.6
       - key: PYTHONUNBUFFERED
         value: "true"
-      - key: NUMBA_CACHE_DIR
-        value: "/tmp/numba_cache"
-      - key: LIBROSA_CACHE_DIR
-        value: "/tmp/librosa_cache"
+      - key: NUMBA_WARNINGS
+        value: "0"
+      - key: NUMBA_DEBUG
+        value: "0"
+      - key: TF_CPP_MIN_LOG_LEVEL
+        value: "2"
     disk:
       name: data
-      mountPath: /data
+      mountPath: /app/data
       sizeGB: 1
-    healthCheckPath: /
-    autoDeploy: false
-    buildFilter:
-      paths:
-        - requirements.txt
-        - "**/*.py"
-        - "**/*.pb"
-        - models/**
-        - essentia graphfiles/**
