@@ -1,5 +1,6 @@
 catboost==1.2.7
-essentia==2.1b6.dev1110
+essentia-tensorflow==2.1b6.dev1110
+tensorflow>=2.0.0
 Flask==3.1.0
 joblib==1.4.2
 librosa==0.10.2.post1
