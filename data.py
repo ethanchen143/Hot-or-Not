@@ -66,12 +66,19 @@ def extract_features(file_path):
 
             # Rhythm Features
             try:
-                tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
+                tempo, _ = librosa.beat.beat_track(y=y, sr=sr, hop_length=512)
                 zero_crossing_rate = np.mean(librosa.feature.zero_crossing_rate(y))
                 logger.info("Rhythm features extraction successful")
             except Exception as e:
-                logger.error(f"Rhythm features extraction failed: {str(e)}")
-                return None, f"Rhythm features extraction failed: {str(e)}"
+                try:
+                    logger.warning("First rhythm extraction method failed, trying alternative...")
+                    from scipy.signal.windows import hann  # explicit import
+                    tempo, _ = librosa.beat.beat_track(y=y, sr=sr, hop_length=512)
+                    zero_crossing_rate = np.mean(librosa.feature.zero_crossing_rate(y))
+                    logger.info("Alternative rhythm features extraction successful")
+                except Exception as alt_e:
+                    logger.error(f"Both rhythm feature extraction methods failed. Original error: {str(e)}, Alternative error: {str(alt_e)}")
+                    return None, f"Rhythm features extraction failed: {str(alt_e)}"
 
             # Tonnetz
             try:
