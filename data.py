@@ -10,15 +10,10 @@ is_hot = 0
 
 def extract_features(file_path):
     try:
-        import soundfile as sf
-        y, sr = librosa.load(file_path, sr=None)
+        y, sr = librosa.load(file_path)
     except Exception as e:
-        print(f"Error loading with soundfile: {e}")
-        try:
-            y, sr = librosa.load(file_path, sr=None, backend='audioread')
-        except Exception as e:
-            print(f"Error loading with audioread: {e}")
-            raise
+        print(f"Error loading {file_path}: {e}")
+        return None
 
     try:
         # Extract MFCCs (Timbral Texture)
@@ -105,6 +100,7 @@ def process_directory(directory_path):
     return features_df
 
 if __name__ == '__main__':
-    directory_path = './not_audio' 
-    features_df = process_directory(directory_path)
-    features_df.to_csv('not_songs.csv', index=False)
+    pass
+    # directory_path = './not_audio' 
+    # features_df = process_directory(directory_path)
+    # features_df.to_csv('not_songs.csv', index=False)
