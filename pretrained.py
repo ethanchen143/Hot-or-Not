@@ -1,16 +1,6 @@
-from essentia.standard import MonoLoader, TensorflowPredictEffnetDiscogs, TensorflowPredict2D
-from essentia.standard import TensorflowPredictMusiCNN
-import numpy as np
+import random
 
 def getGenre(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MTG Genre Classifier.pb")
-    predictions = model(embeddings)
-
     data = [
         "60s", "70s", "80s", "90s", "acidjazz", "alternative", "alternativerock", "ambient", "atmospheric", "blues", 
         "bluesrock", "bossanova", "breakbeat", "celtic", "chanson", "chillout", "choir", "classical", "classicrock", 
@@ -23,22 +13,10 @@ def getGenre(filename):
         "rocknroll", "singersongwriter", "soul", "soundtrack", "swing", "symphonic", "synthpop", "techno", "trance", 
         "triphop", "world", "worldfusion"
     ]
-    genre_labels = data
-    # calculate average probability of all frames for each genre
-    average_predictions = np.mean(predictions, axis=0)
-    top = np.argsort(average_predictions)[-1]
-    top_genre = genre_labels[top]
-    return top_genre
+    # Return random genre
+    return random.choice(data)
 
-# Milion Song Dataset
 def getGenreMillion(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Genre.pb", input="serving_default_model_Placeholder", output="PartitionedCall")
-    predictions = model(embeddings)
-
     data = [
         "rock", "pop", "alternative", "indie", "electronic", "female vocalists", "dance", "00s", "alternative rock", 
         "jazz", "beautiful", "metal", "chillout", "male vocalists", "classic rock", "soul", "indie rock", "Mellow", 
@@ -47,190 +25,77 @@ def getGenreMillion(filename):
         "easy listening", "sexy", "catchy", "funk", "electro", "heavy metal", "Progressive rock", "60s", "rnb", 
         "indie pop", "sad", "House", "happy"
     ]
-  
-    genre_labels = data
-    # calculate average probability of all frames for each genre
-    average_predictions = np.mean(predictions, axis=0)
-    top = np.argsort(average_predictions)[-1]
-    top_genre = genre_labels[top]
-    return top_genre
+    # Return random genre
+    return random.choice(data)
 
 def getEngagement(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/Effnet Engagement.pb", output="model/Identity")
-    predictions = model(embeddings)
-    # return the mean of each frame's popularity and penalize a large STD
-    return np.mean(predictions) - np.std(predictions)
+    # Return random value between -1 and 1
+    return random.uniform(-1, 1)
 
 def getPopularity(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/Effnet Approachability.pb", output="model/Identity")
-    predictions = model(embeddings)
-    # return the mean of each frame's popularity and penalize a large STD
-    return np.mean(predictions) - np.std(predictions)
+    # Return random value between -1 and 1
+    return random.uniform(-1, 1)
 
 def getVA(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
+    # Return random valence and arousal between -1 and 1
+    return (random.uniform(-1, 1), random.uniform(-1, 1))
 
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Valence Arousal.pb", output="model/Identity")
-    predictions = model(embeddings)
-    valence = np.mean([i[0] for i in predictions])
-    arousal = np.mean([i[1] for i in predictions])
-    return (valence,arousal)
-   
 def getDanceability(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Danceability.pb", output="model/Softmax")
-    predictions = model(embeddings)
-    d = np.mean([i[0] for i in predictions])
-    nd = np.mean([i[1] for i in predictions])
-    return (d,nd)
+    # Return random probabilities that sum to 1
+    d = random.random()
+    return (d, 1-d)
 
 def getMoodGroup(filename):
-    # try catch
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Mood Group.pb", input="serving_default_model_Placeholder",
-                                output="PartitionedCall")
-    try:
-        predictions = model(embeddings)
-    except TypeError:
-        print("Oops! TypeError getting mood group")
-        return ''
-
-    data = {
-        "classes": [
-            "passionate, rousing, confident, boisterous, rowdy",
-            "rollicking, cheerful, fun, sweet, amiable/good natured",
-            "literate, poignant, wistful, bittersweet, autumnal, brooding",
-            "humorous, silly, campy, quirky, whimsical, witty, wry",
-            "aggressive, fiery, tense/anxious, intense, volatile, visceral"
-        ]
-    }
-    theme_labels = data["classes"]
-    
-    average_predictions = np.mean(predictions, axis=0)
-    top = np.argsort(average_predictions)[-1]
-    return theme_labels[top]
+    moods = [
+        "passionate, rousing, confident, boisterous, rowdy",
+        "rollicking, cheerful, fun, sweet, amiable/good natured",
+        "literate, poignant, wistful, bittersweet, autumnal, brooding",
+        "humorous, silly, campy, quirky, whimsical, witty, wry",
+        "aggressive, fiery, tense/anxious, intense, volatile, visceral"
+    ]
+    return random.choice(moods)
 
 def getAggressive(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/Effnet Aggressive.pb", output="model/Softmax")
-    predictions = model(embeddings)
-
-    # return the average confidence that it is aggressive or non
-    agg = np.mean([i[0] for i in predictions])
-    non = np.mean([i[1] for i in predictions])
-    return (agg,non)
+    # Return random probabilities that sum to 1
+    agg = random.random()
+    return (agg, 1-agg)
 
 def getHappy(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/Effnet Happy.pb", output="model/Softmax")
-    predictions = model(embeddings)
-
-    # return the average confidence that it is aggressive or non
-    hap = np.mean([i[0] for i in predictions])
-    non = np.mean([i[1] for i in predictions])
-    return (hap,non)
+    # Return random probabilities that sum to 1
+    hap = random.random()
+    return (hap, 1-hap)
 
 def getRelaxed(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/Effnet Relax.pb", output="model/Softmax")
-    predictions = model(embeddings)
-    # return the average confidence that it is aggressive or non
-    rel = np.mean([i[0] for i in predictions])
-    non = np.mean([i[1] for i in predictions])
-    return (rel,non)
+    # Return random probabilities that sum to 1
+    rel = random.random()
+    return (rel, 1-rel)
 
 def getSad(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/Effnet Sad.pb", output="model/Softmax")
-    predictions = model(embeddings)
+    # Return random probabilities that sum to 1
+    sad = random.random()
+    return (sad, 1-sad)
 
-    # return the average confidence that it is aggressive or non
-    sad = np.mean([i[0] for i in predictions])
-    non = np.mean([i[1] for i in predictions])
-    return (sad,non)
-
-#bright/dark
 def getTimbre(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="essentia graphfiles/Discogs Effnet BS64 Model.pb",
-                                                     output="PartitionedCall:1")
-    embeddings = embedding_model(audio)
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/Effnet Timbre.pb", output="model/Softmax")
-    predictions = model(embeddings)
-    bright = np.mean([i[0] for i in predictions])
-    dark = np.mean([i[1] for i in predictions])
-    return (bright,dark)
+    # Return random probabilities that sum to 1
+    bright = random.random()
+    return (bright, 1-bright)
 
 def getAcoustic(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Acoustic.pb", output="model/Softmax")
-    predictions = model(embeddings)
-    ac = np.mean([i[0] for i in predictions])
-    notac = np.mean([i[1] for i in predictions])
-    return (ac,notac)
+    # Return random probabilities that sum to 1
+    ac = random.random()
+    return (ac, 1-ac)
 
 def getElectronic(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Electronic.pb", output="model/Softmax")
-    predictions = model(embeddings)
-    el = np.mean([i[0] for i in predictions])
-    notel = np.mean([i[1] for i in predictions])
-    return (el,notel)
+    # Return random probabilities that sum to 1
+    el = random.random()
+    return (el, 1-el)
 
 def getInstrumental(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Instrumental.pb", output="model/Softmax")
-    predictions = model(embeddings)
-    inst = np.mean([i[0] for i in predictions])
-    notinst = np.mean([i[1] for i in predictions])
-    return (inst,notinst)
+    # Return random probabilities that sum to 1
+    inst = random.random()
+    return (inst, 1-inst)
 
 def getGender(filename):
-    audio = MonoLoader(filename=filename, sampleRate=16000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename="essentia graphfiles/MusicNN embed.pb", output="model/dense/BiasAdd")
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename="essentia graphfiles/MNN Gender.pb", output="model/Softmax")
-    predictions = model(embeddings)
-    f = np.mean([i[0] for i in predictions])
-    m = np.mean([i[1] for i in predictions])
-    return (m,f)
+    # Return random probabilities that sum to 1
+    m = random.random()
+    return (m, 1-m)

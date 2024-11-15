@@ -2,21 +2,11 @@ services:
   - type: web
     name: hot-or-not
     env: python
-    buildCommand: |
-      pip install upgrade pip
-      pip install -r requirements.txt && \
-      pip install essentia-tensorflow==2.1b6.dev1110 -f https://essentia.upf.edu/python-wheels/ && \
+    buildCommand: pip install -r requirements.txt
     startCommand: python app.py
     envVars:
-      - key: PYTHONUNBUFFERED
-        value: "true"
-      - key: NUMBA_WARNINGS
-        value: "0"
-      - key: NUMBA_DEBUG
-        value: "0"
-      - key: TF_CPP_MIN_LOG_LEVEL
-        value: "2"
-    disk:
-      name: data
-      mountPath: /app/data
-      sizeGB: 1
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: FLASK_ENV
+        value: production
+    autoDeploy: true

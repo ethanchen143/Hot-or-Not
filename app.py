@@ -5,18 +5,20 @@ from flask import send_file
 from werkzeug.utils import secure_filename
 from inference import infer
 from waitress import serve
+import sys
 
 # Configure logging - disable numba debug messages
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-# Disable numba debug logging
-logging.getLogger('numba').setLevel(logging.WARNING)
-# Disable unnecessary tensorflow logging
-logging.getLogger('tensorflow').setLevel(logging.WARNING)
-
 logger = logging.getLogger(__name__)
+
+# Log all imported modules
+logger.debug("Imported modules:")
+for name, module in sys.modules.items():
+    if module:
+        logger.debug(f"  {name}")
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -84,19 +86,7 @@ def hot():
 @app.route('/not')
 def no():
     return render_template('not.html')
-
+    
 if __name__ == '__main__':
     logger.info("Starting server...")
-    try:
-        serve(
-            app,
-            host='0.0.0.0',
-            port=8000,
-            threads=4,
-            channel_timeout=300,
-            cleanup_interval=30,
-            connection_limit=200,
-            max_request_body_size=1073741824
-        )
-    except Exception as e:
-        logger.error(f"Server failed to start: {e}")
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
