@@ -7,18 +7,12 @@ from inference import infer
 from waitress import serve
 import sys
 
-# Configure logging - disable numba debug messages
+# Configure logging - only show INFO and above, disable debug messages
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-# Log all imported modules
-logger.debug("Imported modules:")
-for name, module in sys.modules.items():
-    if module:
-        logger.debug(f"  {name}")
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'

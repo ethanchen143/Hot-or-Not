@@ -100,6 +100,6 @@ def process_directory(directory_path):
     return features_df
 
 if __name__ == '__main__':
-    directory_path = './not_audio' 
+    directory_path = './not_audio'
     features_df = process_directory(directory_path)
     features_df.to_csv('not_songs.csv', index=False)
