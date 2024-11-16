@@ -1,101 +1,50 @@
 import random
+# actual essentia prediction are not used because essentia can't be installed in the docker container
 
 def getGenre(filename):
-    data = [
-        "60s", "70s", "80s", "90s", "acidjazz", "alternative", "alternativerock", "ambient", "atmospheric", "blues", 
-        "bluesrock", "bossanova", "breakbeat", "celtic", "chanson", "chillout", "choir", "classical", "classicrock", 
-        "club", "contemporary", "country", "dance", "darkambient", "darkwave", "deephouse", "disco", "downtempo", 
-        "drumnbass", "dub", "dubstep", "easylistening", "edm", "electronic", "electronica", "electropop", "ethno", 
-        "eurodance", "experimental", "folk", "funk", "fusion", "groove", "grunge", "hard", "hardrock", "hiphop", 
-        "house", "idm", "improvisation", "indie", "industrial", "instrumentalpop", "instrumentalrock", "jazz", 
-        "jazzfusion", "latin", "lounge", "medieval", "metal", "minimal", "newage", "newwave", "orchestral", "pop", 
-        "popfolk", "poprock", "postrock", "progressive", "psychedelic", "punkrock", "rap", "reggae", "rnb", "rock", 
-        "rocknroll", "singersongwriter", "soul", "soundtrack", "swing", "symphonic", "synthpop", "techno", "trance", 
-        "triphop", "world", "worldfusion"
-    ]
-    # Return random genre
-    return random.choice(data)
+    return "pop"
 
 def getGenreMillion(filename):
-    data = [
-        "rock", "pop", "alternative", "indie", "electronic", "female vocalists", "dance", "00s", "alternative rock", 
-        "jazz", "beautiful", "metal", "chillout", "male vocalists", "classic rock", "soul", "indie rock", "Mellow", 
-        "electronica", "80s", "folk", "90s", "chill", "instrumental", "punk", "oldies", "blues", "hard rock", 
-        "ambient", "acoustic", "experimental", "female vocalist", "guitar", "Hip-Hop", "70s", "party", "country", 
-        "easy listening", "sexy", "catchy", "funk", "electro", "heavy metal", "Progressive rock", "60s", "rnb", 
-        "indie pop", "sad", "House", "happy"
-    ]
-    # Return random genre
-    return random.choice(data)
+    return "electronic"
 
 def getEngagement(filename):
-    # Return random value between -1 and 1
-    return random.uniform(-1, 1)
+    return 0.62
 
 def getPopularity(filename):
-    # Return random value between -1 and 1
-    return random.uniform(-1, 1)
+    return 0.44
 
 def getVA(filename):
-    # Return random valence and arousal between -1 and 1
-    return (random.uniform(-1, 1), random.uniform(-1, 1))
+    return (5.3, 4.4)
 
 def getDanceability(filename):
-    # Return random probabilities that sum to 1
-    d = random.random()
-    return (d, 1-d)
+    return (0.92,0.08)
 
 def getMoodGroup(filename):
-    moods = [
-        "passionate, rousing, confident, boisterous, rowdy",
-        "rollicking, cheerful, fun, sweet, amiable/good natured",
-        "literate, poignant, wistful, bittersweet, autumnal, brooding",
-        "humorous, silly, campy, quirky, whimsical, witty, wry",
-        "aggressive, fiery, tense/anxious, intense, volatile, visceral"
-    ]
-    return random.choice(moods)
+    return "rollicking, cheerful, fun, sweet, amiable/good natured"
 
 def getAggressive(filename):
-    # Return random probabilities that sum to 1
-    agg = random.random()
-    return (agg, 1-agg)
+    return (0.04,0.96)
 
 def getHappy(filename):
-    # Return random probabilities that sum to 1
-    hap = random.random()
-    return (hap, 1-hap)
+    return (0.32,0.68)
 
 def getRelaxed(filename):
-    # Return random probabilities that sum to 1
-    rel = random.random()
-    return (rel, 1-rel)
+    return (0.42,0.58)
 
 def getSad(filename):
-    # Return random probabilities that sum to 1
-    sad = random.random()
-    return (sad, 1-sad)
+    return (0.85,0.15)
 
 def getTimbre(filename):
-    # Return random probabilities that sum to 1
-    bright = random.random()
-    return (bright, 1-bright)
+    return (0.48,0.52)
 
 def getAcoustic(filename):
-    # Return random probabilities that sum to 1
-    ac = random.random()
-    return (ac, 1-ac)
+    return (0.01,0.99)
 
 def getElectronic(filename):
-    # Return random probabilities that sum to 1
-    el = random.random()
-    return (el, 1-el)
+    return (0.96, 0.04)
 
 def getInstrumental(filename):
-    # Return random probabilities that sum to 1
-    inst = random.random()
-    return (inst, 1-inst)
+    return (0.02, 0.98)
 
 def getGender(filename):
-    # Return random probabilities that sum to 1
-    m = random.random()
-    return (m, 1-m)
+    return (0.19, 0.81)
